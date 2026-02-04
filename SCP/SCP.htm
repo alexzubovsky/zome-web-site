@@ -1,0 +1,172 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+		<meta name="google-site-verification" content="UOgvX7pIpTKE2s3QOeRYmOooBe9uYiAHIdOcXWMEhSQ" />
+    <title>Student Collaboration Platform</title>
+    <link rel="stylesheet" href="http://www.w3schools.com/lib/w3.css" />
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+    <script src="http://www.w3schools.com/angular/lib/w3codecolor.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-sanitize.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-route.js"></script>
+<style type="text/css">
+    .addInput {
+        height: 1.8em;
+        text-align:center;
+    }
+    .mandatoryField{
+        color:red;
+        vertical-align:super;
+        font-size:smaller;
+    }
+</style>
+</head>
+<body ng-app="myApp">
+        <table style="margin:0;padding:1em;padding-left:2em;width:100%;background-color:lightgrey">
+            <tr>
+                <td style="align-content:flex-start;font-size:24pt;font-family:'Arial',sans-serif;">Student Collaboration Platform</td>
+                <td style="align-content:flex-end">
+                    <a class='headerLink' href="#/">Log In</a>
+                    <a class='headerLink' href="#session">Create Session</a>
+                    <a class='headerLink' href="#category">Create Category/Topic</a>
+                </td>
+            </tr>
+        </table>
+        <ng-view></ng-view>
+        <script type="text/javascript">
+	var app = angular.module('myApp', ['ngSanitize', 'ngRoute']);
+	app.config(configRootProvider);
+	app.controller('logInCtrl', logInController);
+	app.controller('newSessionCtrl', newSessionController);
+	app.controller('newCategoryCtrl', newCategoryController);
+	function logInController($scope) {
+	    $scope.schools = {
+	        sch01: {name:"Oregon State University", url:"http://zume.atrg.com"},
+	        sch02: {name:"Linfield College",        url:"http://zume.atrg.com"},
+	        sch03: {name:"Pacific University",      url:"http://zume.atrg.com"},
+            sch04: {name:"Website address",         url:""}
+	    };
+	    $scope.phones = {
+	        ph01: {name:"Home", value:"h"},
+	        ph02: {name:"Mobile",  value:"m"},
+	        ph03: {name:"Work",  value:"w"},
+	        ph04: {name:"Other",  value:"o"},
+	        ph05: {name:"Fax",  value:"f"}
+	    };
+	    $scope.userPhones = [
+	        //{country: "1",area:"201 ",exch:"555",number:"3344", type:"h"}
+	    ];
+	    $scope.findPhoneType = function (type) {
+	        var ret = $scope.phones.ph01;
+	        for (var i in $scope.phones)
+	            if ($scope.phones[i].value == type) {
+	                ret = $scope.phones[i];
+	                break;
+	            }
+	        return ret.name;
+	    };
+	    $scope.addPhone = function (newCountry, newArea, newExch, newNumber, type) {
+	        $scope.userPhones.push({ country: newCountry, area: newArea, exch: newExch, number: newNumber, type: type, ind: $scope.userPhones.length });
+	        $scope.newCountry = $scope.newArea = $scope.newExch = $scope.newNumber = "";
+	    };
+	    $scope.deletePhone = function (ind) {
+	        $scope.userPhones.splice(ind, 1);
+	    };
+	    $scope.altEmails = [];
+	    $scope.addAltEmail = function (altEmail) {
+	        $scope.altEmails.push(altEmail);
+	        $scope.altEmail = "";
+	    };
+	    $scope.deleteAltEmail = function (altEmail) {
+	        for(var i=0; $scope.altEmails.length > i;i++)
+	            if($scope.altEmails[i] == altEmail){
+	                $scope.altEmails.splice(i, 1);
+	                break;
+	            }
+	    };
+
+	    $scope.categories = {
+	        cat01: {name:"Student", value:"student"},
+	        cat02: {name:"Professor", value:"teacher1"},
+	        cat03: {name:"Teacher Assistant", value:"teacher3"},
+            cat04: {name:"Moderator", value:"moderator"},
+            cat05: {name:"School Administrator", value:"schadmin"},
+            cat06: {name:"System Administrator", value:"sysadmin"},
+	        cat07: {name:"Perspective Student", value:"pstudent"}
+	    };
+	    $scope.hideLoginForm = false;
+	    $scope.showRegisterForm = false;
+	    $scope.$watch('logPassword', function () { $scope.logTest(); });
+	    $scope.$watch('logUsername', function () { $scope.logTest(); });
+	    $scope.$watch('regPassw1', function () { $scope.regTest(); });
+	    $scope.$watch('passw2', function () { $scope.regTest(); });
+	    $scope.$watch('regUsername', function () { $scope.regTest(); });
+	    $scope.$watch('regEmail', function () { $scope.regTest(); });
+	    $scope.$watch('fName', function () { $scope.regTest(); });
+	    $scope.$watch('lName', function () { $scope.regTest(); });
+	    $scope.$watch('newCountry', function () { $scope.phoneTest(); });
+	    $scope.$watch('newArea', function () { $scope.phoneTest(); });
+	    $scope.$watch('newExch', function () { $scope.phoneTest(); });
+	    $scope.$watch('newNumber', function () { $scope.phoneTest(); });
+	    $scope.$watch('altEmail', function () {
+	        $scope.altEmailIncomplete = !$scope.altEmail;
+	    });
+	    $scope.regError = $scope.regEmailError = true;
+	    $scope.regIncomplete = true;
+	    $scope.logIncomplete = true;
+	    $scope.phoneIncomplete = true;
+	    $scope.altEmailIncomplete = true;
+	    $scope.altEmailError = false;
+	    $scope.regTest = function () {
+	        $scope.regError = $scope.regPassw1 !== $scope.passw2;
+	        $scope.regIncomplete = ($scope.regEmailError = !$scope.regEmail.length) ||!$scope.regUsername.length ||
+			//!$scope.lName.length ||!$scope.fName.length
+			!$scope.regPassw1.length || !$scope.passw2.length;
+	    };
+    	$scope.logTest = function () {
+    	    $scope.logIncomplete = !$scope.logUsername.length || !$scope.logPassword.length;
+	    };
+  	    $scope.phoneTest = function () {
+  	        $scope.phoneIncomplete = true;
+  	        if (testNumber($scope.newCountry, 1) != -1)//for debugging
+  	            if (testNumber($scope.newCountry, 4) != 1)
+  	                if (testNumber($scope.newArea, 3) == 0)
+  	                    if (testNumber($scope.newExch, 3) == 0)
+  	                        if (testNumber($scope.newNumber, 4) == 0)
+  	                            $scope.phoneIncomplete = false;
+  	    };
+    }  
+  	function testNumber(n, val) {
+  	    var len = String(n).length;
+  	    if (len < val) return -1;
+  	    else if (len > val) return 1;
+  	    else return 0;
+  	}
+	function newSessionController($scope, $http) {
+	}
+	function newCategoryController($scope, $http) {
+	}
+    function configRootProvider($routeProvider) {
+	    $routeProvider.when("/", {templateUrl: "SCPLogIn.htm",controller: "logInCtrl"});
+	    $routeProvider.when("/session", {templateUrl: "SCPSession.htm",controller: "newSessionCtrl"});
+        $routeProvider.when("/category", {templateUrl: "SCPCategory.htm",controller: "newCategoryCtrl"});
+    }
+    app.directive("moveNextOnMaxlength", function () {
+        return {
+            restrict: "A",
+            link: function ($scope, element) {
+                element.on("input", function (e) {
+                    if (element.val().length == element.attr("maxlength")) {
+                        var $nextElement = element.next();
+                        if ($nextElement.length) {
+                            $nextElement[0].focus();
+                        }
+                    }
+                });
+            }
+        }
+    });
+</script>
+</body>
+</html>

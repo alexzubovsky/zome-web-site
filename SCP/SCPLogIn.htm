@@ -1,0 +1,213 @@
+﻿<!--DOCTYPE html>
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+	<link rel="stylesheet" href="http://www.w3schools.com/lib/w3.css" />
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+	<script src="http://www.w3schools.com/angular/lib/w3codecolor.js"></script>
+</head>
+<body ng-app="myApp" ng-controller="userCtrl"-->
+
+<div class="w3-container">
+
+	<h3>Log In to Student Collaboration Platform of&#160;
+            <select style="font-size: 12pt;" ng-model="selectedSchool" ng-options="y.name for (x, y) in schools" ng-init="selectedSchool=schools.sch02">
+			</select>
+	</h3>
+	<!--{{selectedSchool.name}}<div/>{{selectedSchool.url}}-->
+	<form ng-hide="hideLoginForm">
+		<table class="w3-table w3-bordered w3-striped">
+			<tr>
+				<th>Username or Email</th>
+			</tr>
+			<tr>
+				<td>
+					<input type="text" ng-model="logUsername" /></td>
+			</tr>
+			<tr>
+				<th>Password</th>
+			</tr>
+			<tr>
+				<td>
+					<input type="password" ng-model="logPassword" /></td>
+			</tr>
+		</table>
+		<br>
+	</form>
+	<button ng-hide="hideLoginForm" ng-disabled="logIncomplete" class="w3-btn w3-green w3-ripple" ng-click="logInUser()">&#10004; Log In to {{selectedSchool.name}}</button>
+	<button ng-show="showRegisterForm" class="w3-btn w3-green w3-ripple" ng-click="hideLoginForm=false;showRegisterForm = false;">&#10004; Show Log In</button>
+	<button ng-hide="showRegisterForm" class="w3-btn w3-green w3-ripple" ng-click="hideLoginForm=true;showRegisterForm = true;">&#9998; Register in to {{selectedSchool.name}}</button>
+
+	<form ng-show="showRegisterForm">
+		<h3>Register in to {{selectedSchool.name}}:</h3>
+		<label ng-show="regIncomplete"><span class="mandatoryField">*</span> Mandatory fields - not filled out yet</label>
+		<div ng-show="regEmailError">Please provide valid email</div>
+		<div ng-show="regError">Password and Confirmation shall not differ</div>
+		<table class="w3-table w3-bordered w3-striped">
+			<tr>
+				<th width="50%">Username:<span class="mandatoryField">*</span></th>
+				<th>Email:<span class="mandatoryField">*</span></th>
+			</tr>
+			<tr>
+				<td>
+					<input class="w3-input w3-border" type="text" ng-model="regUsername" placeholder="Username"></td>
+				<td>
+					<input class="w3-input w3-border" type="email" ng-model="regEmail" placeholder="Email"></td>
+			</tr>
+			<tr>
+				<th>Password:<span class="mandatoryField">*</span></th>
+				<th>Confirm Password:<span class="mandatoryField">*</span></th>
+			</tr>
+			<tr>
+				<td>
+					<input class="w3-input w3-border" type="password" ng-model="regPassw1" placeholder="Password"></td>
+				<td>
+					<input class="w3-input w3-border" type="password" ng-model="passw2" placeholder="Repeat Password"></td>
+			</tr>
+			<tr>
+				<th>User Category</th>
+				<th>{{selectedCategory.name}} ID in {{selectedSchool.name}}</th>
+			</tr>
+			<tr>
+				<td>
+					<select ng-model="selectedCategory" ng-options="y.name for (x, y) in categories" ng-init="selectedCategory=categories.cat01"></select>
+				</td>
+				<td>
+					<input type="text" ng-model="userIdInSchool"></input>
+				</td>
+			</tr>
+			<tr>
+				<th>First Name:</th>
+				<th>Last Name:</th>
+			</tr>
+			<tr>
+				<td>
+					<input class="w3-input w3-border" type="text" ng-model="fName" placeholder="First Name"></td>
+				<td>
+					<input class="w3-input w3-border" type="text" ng-model="lName" placeholder="Last Name"></td>
+			</tr>
+			<tr>
+				<th>Nickname</th>
+				<th>Photo</th>
+			</tr>
+			<tr>
+				<td>
+					<input class="w3-input w3-border" type="text" ng-model="nickName" placeholder="Nick Name"></td>
+				<td>
+					<button class="w3-btn w3-green w3-ripple" ng-click="uploadPhoto()">Upload photo</button></td>
+			</tr>
+			<tr>
+				<th>Phone Numbers</th>
+				<th>Alternative Emails</th>
+			</tr>
+			<tr>
+				<td>
+					<table>
+						<tr ng-repeat="a in userPhones">
+							<td>{{a.country}} ({{a.area}}) {{a.exch}} - {{a.number}} {{findPhoneType(a.type)}}</td>
+							<td>
+								<input class="addInput" type="button" ng-click="deletePhone(a.ind)" value="-" /></td>
+						</tr>
+						<tr>
+							<td>
+								<input class="addInput" ng-model="newCountry" type="number" size="1" ng-init="newCountry=1" maxlength="4" move-next-on-maxlength />
+								(<input class="addInput" ng-model="newArea" type="number" size="2" placeholder="xxx" maxlength="3" move-next-on-maxlength />)
+                                    <input class="addInput" ng-model="newExch" type="number" size="2" placeholder="xxx" maxlength="3" move-next-on-maxlength />
+								-
+                                    <input class="addInput" ng-model="newNumber" type="number" size="3" placeholder="xxxx" maxlength="4" move-next-on-maxlength />
+								<select class="addInput" ng-model="selectedPhone" ng-options="y.name for (x, y) in phones" ng-init="selectedPhone=phones.ph01"></select>
+							</td>
+							<td>
+								<input class="addInput" type="button" ng-disabled="phoneIncomplete" ng-click="addPhone(newCountry, newArea,newExch,newNumber, selectedPhone.value)" value="+" /></td>
+						</tr>
+					</table>
+				</td>
+				<td>
+					<table>
+						<tr ng-repeat="a in altEmails">
+							<td>{{a}}</td>
+							<td>
+								<input class="addInput" type="button" ng-click="deleteAltEmail(a)" value="-" /></td>
+						</tr>
+						<tr>
+							<td>
+								<input class="addInput" ng-model="altEmail" type="email" placeholder="my.email@mail.org" /></td>
+							<td>
+								<input class="addInput" type="button" ng-disabled="altEmailError || altEmailIncomplete" ng-click="addAltEmail(altEmail)" value="+" /></td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
+		<button class="w3-btn w3-green w3-ripple" ng-disabled="regError || regIncomplete" ng-click="registerUser()">&#10004; Register in to {{selectedSchool.name}}</button>
+		<br />
+	</form>
+
+</div>
+
+<!--script type="text/javascript">
+	angular.module('myApp', []).controller('userCtrl', function ($scope) {
+		$scope.fName = '';
+		$scope.lName = '';
+		$scope.passw1 = '';
+		$scope.passw2 = '';
+		$scope.users = [
+				{ id: 1, fName: 'Hege', lName: "Pege" },
+				{ id: 2, fName: 'Kim', lName: "Pim" },
+				{ id: 3, fName: 'Sal', lName: "Smith" },
+				{ id: 4, fName: 'Jack', lName: "Jones" },
+				{ id: 5, fName: 'John', lName: "Doe" },
+				{ id: 6, fName: 'Peter', lName: "Pan" }
+			];
+		$scope.edit = true;
+		$scope.error = false;
+		$scope.incomplete = false;
+		$scope.hideform = true;
+		$scope.lastId = null;
+		$scope.editUser = function (id) {
+			$scope.hideform = false;
+			if ($scope.edit = (id == 'new')) {
+				$scope.incomplete = true;
+				$scope.fName = '';
+				$scope.lName = '';
+			} else {
+				$scope.edit = true;
+				$scope.lastId = id - 1;
+				$scope.fName = $scope.users[$scope.lastId].fName;
+				$scope.lName = $scope.users[$scope.lastId].lName;
+			}
+		};
+
+		$scope.$watch('passw1', function () { $scope.test(); });
+		$scope.$watch('passw2', function () { $scope.test(); });
+		$scope.$watch('fName', function () { $scope.test(); });
+		$scope.$watch('lName', function () { $scope.test(); });
+
+		$scope.test = function () {
+			if ($scope.passw1 !== $scope.passw2) {
+				$scope.error = true;
+			} else {
+				$scope.error = false;
+			}
+			$scope.incomplete = false;
+			if ($scope.edit && (!$scope.fName.length ||
+			!$scope.lName.length ||
+			!$scope.passw1.length || !$scope.passw2.length)) {
+				$scope.incomplete = true;
+			}
+		};
+		$scope.saveUser = function (id) {
+			if ($scope.edit && $scope.lastId != null) {
+				$scope.users[$scope.lastId].fName = $scope.fName;
+				$scope.users[$scope.lastId].lName = $scope.lName;
+			} else {
+				debugger;
+				$scope.users.push({ id: $scope.users.length + 1, fName: $scope.fName, lName: $scope.lName });
+			}
+			$scope.hideform = true;
+		};
+
+	});
+</script-->
+<!--/body>
+</html-->
